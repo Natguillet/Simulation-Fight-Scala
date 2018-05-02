@@ -4,7 +4,7 @@
 /*
 Ce petit programme en scala execute un algorithme de graphe itératif sur Spark GraphX. Cet algorithme
 essaie de colorier un graphe avec un nombre de couleurs minimal (mais l'algorithme est très random et ne
-donne pas de très bons résultats!). Par contre le code est très court donc il est intéressant comme exemple.
+donne pas de très bons résultats!). Par contre le code est très court donc il1 est intéressant comme exemple.
 Voici comment ce programme fonctionne :
 1. L'exécution commence à testPetersenGraph.
 2. On crée le graphe directement dans le code. Le tiebreaking value est une valeur random (ici hardcodée)
