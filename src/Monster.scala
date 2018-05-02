@@ -6,14 +6,7 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
 
   def dead() : Boolean  =
   {
-    if (this.life <=0)
-      {
-        true
-      }
-    else
-      {
-        false
-      }
+    this.life <=0
   }
 
   def isTouch( defender : Monster, attackNumber : Int) : Boolean =
@@ -21,14 +14,7 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
     val r = new Random()
 
     val precision = this.weapon.firstAttackPrecision - ((attackNumber - 1) * 5)
-      if (precision + r.nextInt(20) > defender.armor)
-        {
-          true
-        }
-      else
-        {
-          false
-        }
+    precision + r.nextInt(20) > defender.armor
   }
   def takeDamage(damage : Int): Unit =
   {

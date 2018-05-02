@@ -16,10 +16,10 @@ object Graphh extends App{
   val sc = new SparkContext(conf)
   sc.setLogLevel("ERROR")
   var myVertices = sc.makeRDD(Array(
-    (1L, new node(id = 1, monster = new Monster("Solar", 363, 15, 44,
-      new Weapon("GreatSword",5,35,18,3,6)))),
-    (2L, new node(id = 2, monster = new Monster("Worg Rider", 13, 0, 18,
+    (1L, new node(id = 1, monster = new Monster("Worg Rider", 13, 0, 18,
       new Weapon("battleaxe",1,6,2,1,8)))),
+    (2L, new node(id = 2, monster = new Monster("Solar", 363, 15, 44,
+      new Weapon("GreatSword",5,35,18,3,6)))),
     (3L, new node(id = 3, monster = new Monster("Worg Rider", 13, 0, 18,
       new Weapon("battleaxe",1,6,2,1,8)))),
     (4L, new node(id = 4, monster = new Monster("Worg Rider", 13, 0, 18,
@@ -48,27 +48,32 @@ object Graphh extends App{
       new Weapon("orc double axe",3,19,10,1,8))))))
 
   var myEdges = sc.makeRDD(Array(
-    Edge(1L, 2L, "1"), Edge(1L, 3L, "2"),
-    Edge(1L, 4L, "3"), Edge(1L, 5L, "4"),
-    Edge(1L, 6L, "5"), Edge(1L, 7L, "6"),
-    Edge(1L, 8L, "7"), Edge(1L, 9L, "8"),
-    Edge(1L, 10L, "9"), Edge(1L, 11L, "10"),
-    Edge(1L, 12L, "11"), Edge(1L, 13L, "12"),
-    Edge(1L, 14L, "13"), Edge(1L, 15L, "14")
+    Edge(2L, 1L, "1"), Edge(2L, 3L, "2"),
+    Edge(2L, 4L, "3"), Edge(2L, 5L, "4"),
+    Edge(2L, 6L, "5"), Edge(2L, 7L, "6"),
+    Edge(2L, 8L, "7"), Edge(2L, 9L, "8"),
+    Edge(2L, 10L, "9"), Edge(2L, 11L, "10"),
+    Edge(2L, 12L, "11"), Edge(2L, 13L, "12"),
+    Edge(2L, 14L, "13"), Edge(2L, 15L, "14")
   ))
 
   val myGraph = Graph(myVertices,myEdges)
 
   def sendTAttackValue(ctx: EdgeContext[node, String, Int]): Unit = {
+    println("Monstre distance Name: "+ctx.dstAttr.monster.name + " Id:" + ctx.dstAttr.id + "<----" + "Monstre source Name: "+ctx.srcAttr.monster.name + " Id:" + ctx.srcAttr.id)
+
     ctx.sendToDst(ctx.srcAttr.monster.Attack(ctx.dstAttr.monster, 1))
   }
 
   def selectBest(dist1: Int, dist2: Int): Int = {
-    if(dist1 < dist2) dist1
+    println("Distance 1:" + dist1)
+    println("Distance 2:" + dist2)
+    if(dist1 > dist2) dist1
     else dist2
   }
 
   def takeDamage(vid: VertexId, nodeMonster: node, damage: Int): node = {
+    println("Take dammage monster name:" + nodeMonster.monster.name + " ID: " + nodeMonster.id + "Damage: " + damage)
     nodeMonster.monster.takeDamage(damage)
     return new node(nodeMonster.id, nodeMonster.monster)
   }
@@ -110,5 +115,5 @@ object Graphh extends App{
     myGraph //return the result graph
   }
 
-  val res = execute(myGraph, 10, sc)
+  val res = execute(myGraph, 3, sc)
 }
