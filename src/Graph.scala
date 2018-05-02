@@ -60,7 +60,6 @@ object Graphh extends App{
   val myGraph = Graph(myVertices,myEdges)
 
   def sendTAttackValue(ctx: EdgeContext[node, String, Int]): Unit = {
-    //println("Monstre distance Name: "+ctx.dstAttr.monster.name + " Id:" + ctx.dstAttr.id + "<----" + "Monstre source Name: "+ctx.srcAttr.monster.name + " Id:" + ctx.srcAttr.id)
     if (ctx.srcAttr.monster.numberOfAttack <= ctx.srcAttr.monster.weapon.maxAttackNumber && !ctx.dstAttr.monster.dead() && !ctx.srcAttr.monster.dead() ) {
       ctx.sendToDst(ctx.srcAttr.monster.Attack(ctx.dstAttr.monster))
       println(ctx.srcAttr.monster.name + " attaque " + ctx.dstAttr.monster.name )
@@ -72,14 +71,11 @@ object Graphh extends App{
   }
 
   def selectBest(dist1: Int, dist2: Int): Int = {
-   // println("Distance 1:" + dist1)
-    //println("Distance 2:" + dist2)
     if(dist1 > dist2) dist1
     else dist2
   }
 
   def takeDamage(vid: VertexId, nodeMonster: node, damage: Int): node = {
-    println("Take dammage monster name:" + nodeMonster.monster.name + " ID: " + nodeMonster.id + "Damage: " + damage)
     nodeMonster.monster.takeDamage(damage)
     return new node(nodeMonster.id, nodeMonster.monster)
   }

@@ -34,7 +34,7 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
         }
       damage += this.weapon.baseDamage
     }
-    this.numberOfAttack += 1;
+    //this.numberOfAttack += 1;
     damage
   }
 }
