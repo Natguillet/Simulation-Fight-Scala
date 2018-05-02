@@ -60,14 +60,20 @@ object Graphh extends App{
   val myGraph = Graph(myVertices,myEdges)
 
   def sendTAttackValue(ctx: EdgeContext[node, String, Int]): Unit = {
-    println("Monstre distance Name: "+ctx.dstAttr.monster.name + " Id:" + ctx.dstAttr.id + "<----" + "Monstre source Name: "+ctx.srcAttr.monster.name + " Id:" + ctx.srcAttr.id)
-
-    ctx.sendToDst(ctx.srcAttr.monster.Attack(ctx.dstAttr.monster, 1))
+    //println("Monstre distance Name: "+ctx.dstAttr.monster.name + " Id:" + ctx.dstAttr.id + "<----" + "Monstre source Name: "+ctx.srcAttr.monster.name + " Id:" + ctx.srcAttr.id)
+    if (ctx.srcAttr.monster.numberOfAttack <= ctx.srcAttr.monster.weapon.maxAttackNumber && !ctx.dstAttr.monster.dead() && !ctx.srcAttr.monster.dead() ) {
+      ctx.sendToDst(ctx.srcAttr.monster.Attack(ctx.dstAttr.monster))
+      println(ctx.srcAttr.monster.name + " attaque " + ctx.dstAttr.monster.name )
+    }
+    if (ctx.dstAttr.monster.numberOfAttack <= ctx.dstAttr.monster.weapon.maxAttackNumber && !ctx.srcAttr.monster.dead() && !ctx.dstAttr.monster.dead() ) {
+      ctx.sendToSrc(ctx.dstAttr.monster.Attack(ctx.srcAttr.monster))
+      println(ctx.dstAttr.monster.name + " attaque " + ctx.srcAttr.monster.name )
+    }
   }
 
   def selectBest(dist1: Int, dist2: Int): Int = {
-    println("Distance 1:" + dist1)
-    println("Distance 2:" + dist2)
+   // println("Distance 1:" + dist1)
+    //println("Distance 2:" + dist2)
     if(dist1 > dist2) dist1
     else dist2
   }
@@ -115,5 +121,5 @@ object Graphh extends App{
     myGraph //return the result graph
   }
 
-  val res = execute(myGraph, 3, sc)
+  val res = execute(myGraph, 10, sc)
 }

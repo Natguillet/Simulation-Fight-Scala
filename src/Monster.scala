@@ -1,7 +1,7 @@
 
 import scala.util.Random;
 
-class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, var weapon: Weapon) extends Serializable{
+class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, var weapon: Weapon, var numberOfAttack : Int = 0) extends Serializable{
 
 
   def dead() : Boolean  =
@@ -9,11 +9,11 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
     this.life <=0
   }
 
-  def isTouch( defender : Monster, attackNumber : Int) : Boolean =
+  def isTouch( defender : Monster) : Boolean =
   {
     val r = new Random()
 
-    val precision = this.weapon.firstAttackPrecision - ((attackNumber - 1) * 5)
+    val precision = this.weapon.firstAttackPrecision - ((this.numberOfAttack - 1) * 5)
     precision + r.nextInt(20) > defender.armor
   }
   def takeDamage(damage : Int): Unit =
@@ -21,11 +21,12 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
     this.life -= damage
   }
 
-  def Attack(defender : Monster, attackNumber : Int): Int ={
+
+  def Attack(defender : Monster): Int ={
     var damage = 0
     val r = new Random()
     var a =0;
-      if(isTouch(defender, attackNumber))
+      if(isTouch(defender))
     {
       for (a <- 1 to this.weapon.numberDice)
         {
@@ -33,6 +34,7 @@ class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, v
         }
       damage += this.weapon.baseDamage
     }
+    this.numberOfAttack += 1;
     damage
   }
 }
