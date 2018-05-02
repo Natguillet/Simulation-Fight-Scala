@@ -1,7 +1,7 @@
 
 import scala.util.Random;
 
-class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, var weapon: Weapon) {
+class Monster(var name: String, var life: Int, var regen: Int, var armor: Int, var weapon: Weapon) extends Serializable{
 
 
   def dead() : Boolean  =

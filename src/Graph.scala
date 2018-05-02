@@ -4,11 +4,12 @@ import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, EdgeContext, Graph, _}
 
 
-class node(var id: Int, var monster: Monster) {
-
+class node(var id: Int, var monster: Monster )extends Serializable {
+  override def toString: String = s"id : $id monster Life : ${monster.life} monster name : ${monster.name}"
 }
 
-object Graphh {
+object Graphh extends App{
+
   val conf = new SparkConf()
     .setAppName("Fight")
     .setMaster("local[*]")
@@ -58,17 +59,56 @@ object Graphh {
 
   val myGraph = Graph(myVertices,myEdges)
 
-  /*val attaqueOrder: VertexRDD[(Int, Int, Int)] = myGraph.aggregateMessages[(Int, Int, Int)]( // attaque, indice mouvement, Mouvement effectif
-    triplet => {
-        triplet.sendToDst(triplet.srcAttr.monster.Attack(triplet.dstAttr.monster,1),0,0)
-        println(triplet.srcAttr.toString + " attaque " + triplet.dstAttr.toString)
-      /*} else {
-        triplet.sendToSrc(0, triplet.srcAttr.MovingToTarget(triplet.dstAttr.position)._1, triplet.srcAttr.MovingToTarget(triplet.dstAttr.position)._2)
-        println(triplet.srcAttr.toString + " moving to " + triplet.dstAttr.toString)
-      }*/
+  def sendTAttackValue(ctx: EdgeContext[node, String, Int]): Unit = {
+    ctx.sendToDst(ctx.srcAttr.monster.Attack(ctx.dstAttr.monster, 1))
+  }
+
+  def selectBest(dist1: Int, dist2: Int): Int = {
+    if(dist1 < dist2) dist1
+    else dist2
+  }
+
+  def takeDamage(vid: VertexId, nodeMonster: node, damage: Int): node = {
+    nodeMonster.monster.takeDamage(damage)
+    return new node(nodeMonster.id, nodeMonster.monster)
+  }
+
+  def execute(g: Graph[node, String], maxIterations: Int, sc: SparkContext): Graph[node, String] = {
+    var myGraph = g
+    var counter = 0
+    val fields = new TripletFields(true, true, false) //join strategy
+
+    def loop1: Unit = {
+      while (true) {
+
+        println("ITERATION NUMERO : " + (counter + 1))
+        counter += 1
+        if (counter == maxIterations) return
+
+        val messages = myGraph.aggregateMessages[Int](
+          sendTAttackValue,
+          selectBest,
+          fields //use an optimized join strategy (we don't need the edge attribute)
+        )
+
+        if (messages.isEmpty()) return
+
+        myGraph = myGraph.joinVertices(messages)(
+          (vid, nodeMonster, damage) => takeDamage(vid, nodeMonster, damage))
+
+        //Ignorez : Code de debug
+        var printedGraph = myGraph.vertices.collect()
+        printedGraph = printedGraph.sortBy(_._1)
+        printedGraph.foreach(
+          elem => println(elem._2)
+        )
+      }
+
     }
-  //(a, b) => (a._1 + b._1, a._2 + b._2, a._3 + b._3)
-  )*/
 
+    loop1 //execute loop
+    myGraph //return the result graph
+  }
 
+  val res = execute(myGraph, 10, sc)
 }
